@@ -1,22 +1,30 @@
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/fetcher');
 
+var db = mongoose.connection;
+db.once('open', function() {
+  console.log('success!')
+})
+
 let repoSchema = mongoose.Schema({
-  id: Number,
+  id: { type: Number, unique: true },
   name: String,
-  owner_login: String,
+  // owner_login: String,
   html_url: String,
   forks: Number,
   description: String,
-  created_at: { type: Date, default: Date.now }
 });
 
-let Repo = mongoose.model('Repo', repoSchema);
+  let Repo = mongoose.model('Repo', repoSchema);
 
-let save = (/* TODO */) => {
-  // TODO: Your code here
-  // This function should save a repo or repos to
-  // the MongoDB
+let save = (repo) => {
+  var newRepo = new Repo(repo);
+
+  newRepo.save((err, repo) => {
+    if (err) {return console.log(err)}
+})
 }
 
-module.exports.save = save;
+
+module.exports = {save, db, Repo}
+// module.exports.fetch = fetch;

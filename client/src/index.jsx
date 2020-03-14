@@ -10,17 +10,30 @@ class App extends React.Component {
     this.state = {
       repos: []
     }
-
   }
 
-  search (term) {
+   search (term) {
     $.ajax({
-      url: 'http://localhost:1128/repos',
+      url: '/repos',
       method: 'POST',
-      data: term,
-      success: () => console.log(`${term} was searched`),
+      data: JSON.stringify({username: term}),
+      contentType: "application/json",
+      success: (data) => {setTimeout(this.getTop25.bind(this), 1000)}/*this.componentDidMount()*/,
       error: () => console.log('POST error!')
       })
+  }
+
+  getTop25 () {
+    $.ajax({
+      url: '/repos',
+      method: 'GET',
+      success: (data) => {this.setState({repos: data})},
+      error: () => console.log('error!')
+      })
+  }
+
+  componentDidMount() {
+    this.getTop25();
   }
 
   render () {
